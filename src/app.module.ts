@@ -6,6 +6,7 @@ import { BookingsModule } from './bookings/bookings.module';
 import { Booking } from './bookings/entities/booking.entity';
 import { NumberOfWheelsModule } from './numberOfWheels/numberOfWheels.module';
 import { vehicleTypesModule } from './vehicleTypes/vehicleTypes.module';
+import { vehicleModelsModule } from './vehicleModels/vehicleModels.module';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { vehicleTypesModule } from './vehicleTypes/vehicleTypes.module';
     }),
     BookingsModule,
     NumberOfWheelsModule,
-    vehicleTypesModule
+    vehicleTypesModule,
+    vehicleModelsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
