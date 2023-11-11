@@ -9,25 +9,27 @@ import { Booking } from './entities/booking.entity';
 export class BookingsService {
   constructor(
     @InjectRepository(Booking)
-    private readonly bookingRepopsitory: Repository<Booking>,
+    private readonly bookingRepository: Repository<Booking>,
   ) {}
   create(createBookingDto: CreateBookingDto) {
-    return this.bookingRepopsitory.save(createBookingDto);
+    console.log(createBookingDto);
+    const newBooking = this.bookingRepository.create(createBookingDto);
+    return this.bookingRepository.save(newBooking);
   }
 
   findAll() {
-    return this.bookingRepopsitory.find();
+    return this.bookingRepository.find();
   }
 
   findOne(id: number) {
-    return this.bookingRepopsitory.findOneBy({ id });
+    return this.bookingRepository.findOneBy({ id });
   }
 
   update(id: number, updateBookingDto: UpdateBookingDto) {
-    return this.bookingRepopsitory.update(id, updateBookingDto);
+    return this.bookingRepository.update(id, updateBookingDto);
   }
 
   remove(id: number) {
-    return this.bookingRepopsitory.delete(id);
+    return this.bookingRepository.delete(id);
   }
 }

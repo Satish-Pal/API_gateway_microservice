@@ -13,7 +13,7 @@ export class Booking {
   lastName: string;
 
   @Column()
-  noOfWheels: number;
+  numberOfWheels: number;
 
   @Column({ length: 50 })
   vehicleType: string;
