@@ -12,7 +12,7 @@ export class BookingsService {
     private readonly bookingRepopsitory: Repository<Booking>,
   ) {}
   create(createBookingDto: CreateBookingDto) {
-    return this.bookingRepopsitory.create(createBookingDto);
+    return this.bookingRepopsitory.save(createBookingDto);
   }
 
   findAll() {
