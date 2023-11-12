@@ -6,7 +6,17 @@ export class vehicleTypesController {
   constructor(private readonly appService: AppService) {}
 
   @Get(':numberOfWheels')
-  getVehicleTypes(@Param('numberOfWheels') numberOfWheels: string): string[] {
-    return this.appService.getVehicleTypes(Number(numberOfWheels));
+  getVehicleTypes(
+    @Param('numberOfWheels') numberOfWheels: string,
+  ): Promise<string[]> {
+    try {
+      const vehicleType = this.appService.getVehicleTypes(
+        Number(numberOfWheels),
+      );
+      return vehicleType;
+    } catch (error) {
+      console.error('Error fetching vehicle Type:', error.message);
+      throw new Error('failed to fetch vehicle Type');
+    }
   }
 }

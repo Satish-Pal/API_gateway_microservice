@@ -6,7 +6,15 @@ export class vehicleModelsController {
   constructor(private readonly appService: AppService) {}
 
   @Get(':vehicleType')
-  getVehicleModels(@Param('vehicleType') vehicleType: string): string[] {
-    return this.appService.getVehicleModels(vehicleType);
+  async getVehicleModels(
+    @Param('vehicleType') vehicleType: string,
+  ): Promise<string[]> {
+    try {
+      const vehicleModel = await this.appService.getVehicleModels(vehicleType);
+      return vehicleModel;
+    } catch (error) {
+      console.log(`Error fetching vehicle model:`, error.message);
+      throw new Error('failed to fetch vehicle model');
+    }
   }
 }

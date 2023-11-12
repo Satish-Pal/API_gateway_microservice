@@ -6,6 +6,8 @@ import {
   Patch,
   Param,
   Delete,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { BookingsService } from './bookings.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
@@ -16,13 +18,31 @@ export class BookingsController {
   constructor(private readonly bookingsService: BookingsService) {}
 
   @Post()
-  create(@Body() createBookingDto: CreateBookingDto) {
-    return this.bookingsService.create(createBookingDto);
+  async create(@Body() createBookingDto: CreateBookingDto) {
+    try {
+      const result = await this.bookingsService.create(createBookingDto);
+      return result;
+    } catch (error) {
+      console.error('Error in BookingsController.create', error.message);
+      throw new HttpException(
+        'Failed to create booking',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Get()
-  findAll() {
-    return this.bookingsService.findAll();
+  async findAll() {
+    try {
+      const bookings = await this.bookingsService.findAll();
+      return bookings;
+    } catch (error) {
+      console.error('Error in bookingsController.findAll', error.message);
+      throw new HttpException(
+        'Failed to fetch bookings',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Get(':id')

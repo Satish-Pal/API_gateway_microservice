@@ -9,9 +9,6 @@ export class vehicleModel {
   @Column()
   model: string;
 
-  @Column()
-  numberOfWheels: string;
-
-  @ManyToOne(() => vehicleType, (type) => type.vehicles)
+  @ManyToOne(() => vehicleType, (vehicleType) => vehicleType.vehicles)
   type: vehicleType;
 }

@@ -13,22 +13,32 @@ export class BookingsService {
     private readonly bookingRepository: Repository<Booking>,
   ) {}
   async create(createBookingDto: CreateBookingDto) {
-    const errors = await validate(createBookingDto);
-    console.log(errors);
-    if (errors.length > 0) {
-      throw new Error(
-        `Validation failed: ${errors
-          .map((error) => Object.values(error.constraints).join(', '))
-          .join(', ')}`,
-      );
+    try {
+      const errors = await validate(createBookingDto);
+      console.log(errors);
+      if (errors.length > 0) {
+        throw new Error(
+          `Validation failed: ${errors
+            .map((error) => Object.values(error.constraints).join(', '))
+            .join(', ')}`,
+        );
+      }
+      const newBooking = this.bookingRepository.create(createBookingDto);
+      return this.bookingRepository.save(newBooking);
+    } catch (error) {
+      console.error('Error in BookingService.create', error.message);
+      throw new Error('failed to create booking');
     }
-
-    const newBooking = this.bookingRepository.create(createBookingDto);
-    return this.bookingRepository.save(newBooking);
   }
 
-  findAll() {
-    return this.bookingRepository.find();
+  async findAll() {
+    try {
+      const bookings = await this.bookingRepository.find();
+      return bookings;
+    } catch (error) {
+      console.error('Error in BookingsService.findAll', error.message);
+      throw new Error('Failed to retrieve all bookings');
+    }
   }
 
   findOne(id: number) {

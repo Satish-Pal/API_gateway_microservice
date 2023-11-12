@@ -11,27 +11,32 @@ export class SeedingService {
     private readonly vehicleTypeRepository: Repository<vehicleType>,
     @InjectRepository(vehicleModel)
     private readonly vehicleModelRepository: Repository<vehicleModel>,
-  ) {}
+  ) { }
 
   async seedData() {
-    const carType = await this.vehicleTypeRepository.save({
-      numberOfWheels: '4',
-    });
-    const bikeType = await this.vehicleTypeRepository.save({
-      numberOfWheels: '2',
-    });
+    try {
+      const carType = await this.vehicleTypeRepository.save({
+        numberOfWheels: '4',
+      });
+      const bikeType = await this.vehicleTypeRepository.save({
+        numberOfWheels: '2',
+      });
 
-    await this.vehicleModelRepository.save([
-      { model: 'Hatchback 1', type: carType },
-      { model: 'Hatchback 2', type: carType },
-      { model: 'SUV 1', type: carType },
-      { model: 'Sedan 1', type: carType },
-      { model: 'Cruiser 1', type: carType },
-      { model: 'Sports Bike 1', type: bikeType },
-      { model: 'Sports Bike 2', type: bikeType },
-      { model: 'Sports Bike 3', type: bikeType },
-    ]);
+      await this.vehicleModelRepository.save([
+        { model: 'Hatchback 1', type: carType },
+        { model: 'Hatchback 2', type: carType },
+        { model: 'SUV 1', type: carType },
+        { model: 'Sedan 1', type: carType },
+        { model: 'Cruiser 1', type: carType },
+        { model: 'Sports Bike 1', type: bikeType },
+        { model: 'Sports Bike 2', type: bikeType },
+        { model: 'Sports Bike 3', type: bikeType },
+      ]);
 
-    console.log('Data seeded successfully');
+      console.log('Data seeded successfully');
+    } catch (error) {
+      console.error(`Error seeding data:`, error.message);
+      throw new Error('Failed to seed data. See logs for details.');
+    }
   }
 }
