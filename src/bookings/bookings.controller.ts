@@ -8,6 +8,7 @@ import {
   Delete,
   HttpException,
   HttpStatus,
+  ConflictException,
 } from '@nestjs/common';
 import { BookingsService } from './bookings.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
@@ -20,6 +21,39 @@ export class BookingsController {
   @Post()
   async create(@Body() createBookingDto: CreateBookingDto) {
     try {
+
+      // checking if fields are expty or not
+      const isEmpty =
+        await this.bookingsService.checkEmptyFields(createBookingDto);
+
+      if (isEmpty) {
+        throw new ConflictException('please fill the fields');
+      }
+
+      const isOverlapping = await this.bookingsService.checkBookingOverlap(
+        createBookingDto.vehicleModel,
+        createBookingDto.startDate,
+        createBookingDto.endDate,
+      );
+
+      const checkDate = await this.bookingsService.checkDates(
+        createBookingDto.startDate,
+        createBookingDto.endDate,
+      );
+
+      if (checkDate) {
+        throw new ConflictException(
+          'start Date should be less than the endDate',
+        );
+      }
+
+      // checking if the same model is exist on in between dates
+      if (isOverlapping) {
+        throw new ConflictException(
+          'Booking Overlaps with an existing vehicle model',
+        );
+      }
+
       const result = await this.bookingsService.create(createBookingDto);
       return result;
     } catch (error) {

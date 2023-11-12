@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -29,6 +29,55 @@ export class BookingsService {
       console.error('Error in BookingService.create', error.message);
       throw new Error('failed to create booking');
     }
+  }
+
+  async checkDates(startDate: Date, endDate: Date): Promise<boolean> {
+    if (new Date(startDate) >= new Date(endDate)) {
+      return true;
+    }
+    return false;
+  }
+
+  async checkEmptyFields(createBookingDto: CreateBookingDto): Promise<boolean> {
+    const {
+      firstName,
+      lastName,
+      numberOfWheels,
+      vehicleType,
+      vehicleModel,
+      startDate,
+      endDate,
+    } = createBookingDto;
+
+    if (
+      !firstName ||
+      !lastName ||
+      !numberOfWheels ||
+      !vehicleType ||
+      !vehicleModel ||
+      !startDate ||
+      !endDate
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  async checkBookingOverlap(
+    vehicleModel: string,
+    startDate: Date,
+    endDate: Date,
+  ): Promise<boolean> {
+    const existingBooking = await this.bookingRepository
+      .createQueryBuilder('booking')
+      .where('booking.vehicleModel = :vehicleModel', { vehicleModel })
+      .andWhere(
+        '(booking.startDate <= :endDate AND booking.endDate >= :startDate)',
+        { startDate, endDate },
+      )
+      .getOne();
+    return !!existingBooking;
   }
 
   async findAll() {

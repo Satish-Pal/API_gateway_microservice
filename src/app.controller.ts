@@ -7,6 +7,6 @@ export class AppController {
 
   @Get()
   getHello(): string {
-    return 'Hello world';
+    return 'Welcome to Vehicle renting Application';
   }
 }

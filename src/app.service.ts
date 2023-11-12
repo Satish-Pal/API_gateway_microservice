@@ -29,10 +29,10 @@ export class AppService {
 
   getVehicleModels(vehicleType: string): string[] {
     try {
-      switch (vehicleType) {
-        case 'Cruiser':
+      switch (vehicleType.toLowerCase()) {
+        case 'cruiser':
           return ['RE classic 300', 'Jawa 42', 'triumph Speed 400'];
-        case 'Sports':
+        case 'sports':
           return ['mt-15', 'apache rtr-160', 'duke-200'];
         case 'hatchback':
           return ['Maruti Swift, Hyundai i20, Tata Tiago, Ford Focus'];
