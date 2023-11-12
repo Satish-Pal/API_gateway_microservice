@@ -4,6 +4,7 @@ import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Booking } from './entities/booking.entity';
+import { validate } from 'class-validator';
 
 @Injectable()
 export class BookingsService {
@@ -11,8 +12,17 @@ export class BookingsService {
     @InjectRepository(Booking)
     private readonly bookingRepository: Repository<Booking>,
   ) {}
-  create(createBookingDto: CreateBookingDto) {
-    console.log(createBookingDto);
+  async create(createBookingDto: CreateBookingDto) {
+    const errors = await validate(createBookingDto);
+    console.log(errors);
+    if (errors.length > 0) {
+      throw new Error(
+        `Validation failed: ${errors
+          .map((error) => Object.values(error.constraints).join(', '))
+          .join(', ')}`,
+      );
+    }
+
     const newBooking = this.bookingRepository.create(createBookingDto);
     return this.bookingRepository.save(newBooking);
   }
