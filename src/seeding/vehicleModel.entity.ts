@@ -9,6 +9,8 @@ export class vehicleModel {
   @Column()
   model: string;
 
-  @ManyToOne(() => vehicleType, (vehicleType) => vehicleType.vehicles)
+  @ManyToOne(() => vehicleType, (vehicleType) => vehicleType.models, {
+    cascade: true,
+  })
   type: vehicleType;
 }

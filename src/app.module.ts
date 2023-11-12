@@ -10,6 +10,7 @@ import { vehicleModelsModule } from './vehicleModels/vehicleModels.module';
 import { SeedingModule } from './seeding/seeding.module';
 import { vehicleType } from './seeding/vehicleTypes.entity';
 import { vehicleModel } from './seeding/vehicleModel.entity';
+import { numberOfWheels } from './seeding/numberOfWheels.entity';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { vehicleModel } from './seeding/vehicleModel.entity';
       username: 'root',
       password: '',
       database: 'rent_a_vehicle',
-      entities: [Booking, vehicleType, vehicleModel],
+      entities: [Booking, numberOfWheels, vehicleType, vehicleModel],
       synchronize: true,
     }),
     BookingsModule,

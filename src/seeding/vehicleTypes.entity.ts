@@ -1,5 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  ManyToOne,
+} from 'typeorm';
 import { vehicleModel } from './vehicleModel.entity';
+import { numberOfWheels } from './numberOfWheels.entity';
 
 @Entity()
 export class vehicleType {
@@ -7,8 +14,11 @@ export class vehicleType {
   id: number;
 
   @Column()
-  numberOfWheels: string;
+  vehicleType: string;
 
-  @OneToMany(() => vehicleModel, (vehicle) => vehicle.type)
-  vehicles: vehicleModel[];
+  @ManyToOne(() => numberOfWheels, (wheels) => wheels.types)
+  numberOfWheels: numberOfWheels;
+
+  @OneToMany(() => vehicleModel, (model) => model.type)
+  models: vehicleModel[];
 }
