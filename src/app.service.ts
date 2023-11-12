@@ -35,7 +35,7 @@ export class AppService {
         case 'sports':
           return ['mt-15', 'apache rtr-160', 'duke-200'];
         case 'hatchback':
-          return ['Maruti Swift, Hyundai i20, Tata Tiago, Ford Focus'];
+          return ['Maruti Swift', 'Hyundai i20', 'Tata Tiago', 'Ford Focus'];
         case 'sedan':
           return [
             'Honda Amaze',
