@@ -7,6 +7,10 @@ import { Booking } from './bookings/entities/booking.entity';
 import { NumberOfWheelsModule } from './numberOfWheels/numberOfWheels.module';
 import { vehicleTypesModule } from './vehicleTypes/vehicleTypes.module';
 import { vehicleModelsModule } from './vehicleModels/vehicleModels.module';
+import { SeedingService } from './seeding/seeding.service';
+import { SeedingModule } from './seeding/seeding.module';
+import { vehicleType } from './seeding/vehicleTypes.entity';
+import { vehicleModel } from './seeding/vehicleModel.entity';
 
 @Module({
   imports: [
@@ -17,13 +21,14 @@ import { vehicleModelsModule } from './vehicleModels/vehicleModels.module';
       username: 'root',
       password: '',
       database: 'rent_a_vehicle',
-      entities: [Booking],
+      entities: [Booking, vehicleType, vehicleModel],
       synchronize: true,
     }),
     BookingsModule,
     NumberOfWheelsModule,
     vehicleTypesModule,
     vehicleModelsModule,
+    SeedingModule,
   ],
   controllers: [AppController],
   providers: [AppService],
