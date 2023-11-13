@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Between, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,6 +12,8 @@ export class BookingsService {
     @InjectRepository(Booking)
     private readonly bookingRepository: Repository<Booking>,
   ) {}
+
+  // creating a bookings
   async create(createBookingDto: CreateBookingDto) {
     try {
       const errors = await validate(createBookingDto);
@@ -31,6 +33,7 @@ export class BookingsService {
     }
   }
 
+  // checks startDate and endDate
   async checkDates(startDate: Date, endDate: Date): Promise<boolean> {
     if (new Date(startDate) >= new Date(endDate)) {
       return true;
@@ -38,6 +41,7 @@ export class BookingsService {
     return false;
   }
 
+  // checcking empty fields 
   async checkEmptyFields(createBookingDto: CreateBookingDto): Promise<boolean> {
     const {
       firstName,
@@ -64,6 +68,7 @@ export class BookingsService {
     return false;
   }
 
+  // checking existing data based on vehicle model
   async checkBookingOverlap(
     vehicleModel: string,
     startDate: Date,
@@ -80,6 +85,7 @@ export class BookingsService {
     return !!existingBooking;
   }
 
+  //  get all the bookings
   async findAll() {
     try {
       const bookings = await this.bookingRepository.find();
@@ -90,14 +96,17 @@ export class BookingsService {
     }
   }
 
+  // get the bookings based on id
   findOne(id: number) {
     return this.bookingRepository.findOneBy({ id });
   }
 
+  // update the bookings based on id
   update(id: number, updateBookingDto: UpdateBookingDto) {
     return this.bookingRepository.update(id, updateBookingDto);
   }
 
+  // remove the booking based on id
   remove(id: number) {
     return this.bookingRepository.delete(id);
   }

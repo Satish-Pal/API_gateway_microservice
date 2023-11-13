@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class AppService {
+  // get the number of wheels
   getNumberOfWheels(): number[] {
     try {
       const wheels = [2, 4];
@@ -12,6 +13,7 @@ export class AppService {
     }
   }
 
+  // get the vehicle type based on number of wheels
   getVehicleTypes(numberOfWheels: number): string[] {
     try {
       if (numberOfWheels === 2) {
@@ -27,6 +29,7 @@ export class AppService {
     }
   }
 
+  // get the vehice model based on vehicle type
   getVehicleModels(vehicleType: string): string[] {
     try {
       switch (vehicleType.toLowerCase()) {

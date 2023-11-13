@@ -5,6 +5,8 @@ import { AppService } from 'src/app.service';
 export class vehicleModelsController {
   constructor(private readonly appService: AppService) {}
 
+  // Get the vehicle model based on vehicle type
+
   @Get(':vehicleType')
   getVehicleModels(@Param('vehicleType') vehicleType: string): string[] {
     try {

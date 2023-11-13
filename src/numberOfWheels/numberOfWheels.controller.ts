@@ -5,6 +5,7 @@ import { AppService } from '../app.service';
 export class NumberOfWheelsController {
   constructor(private readonly appService: AppService) {}
 
+  // Get the Number of wheels
   @Get()
   async getNumberOfWheels(): Promise<number[]> {
     try {
