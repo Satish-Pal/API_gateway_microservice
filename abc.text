@@ -1,0 +1,27 @@
+"typeorm": "ts-node node_modules/typeorm/cli.js",
+    "migration:create": "ts-node migration.ts  -d db/data-source.ts",
+    "migration:run": "typeorm migration:run",
+  "run-migrations": "node run-migration.js",
+    "migration:revert": "typeorm migration:revert  -d db/data-source.ts"
+
+    ---------------------------------------------------------------------
+    import { MigrationInterface, QueryRunner } from 'typeorm';
+import { numberOfWheels } from '../seeding/numberOfWheels.entity';
+import { SeedingService } from 'src/seeding/seeding.service';
+
+export class SeedingData1701752055659 implements MigrationInterface {
+    private seedingService: SeedingService;
+
+    constructor (){
+        this.seedingService = new SeedingService();
+    }
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    await this.seed(queryRunner);
+  }
+
+  public async down(queryRunner: QueryRunner): Promise<void> {}
+
+  private async seed(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.manager.save(numberOfWheels, numberOfWheelsSeedData);
+  }
+}

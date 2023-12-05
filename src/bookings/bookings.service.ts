@@ -1,71 +1,112 @@
-import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import {
+  Injectable,
+  NotFoundException,
+  HttpStatus,
+  HttpException,
+} from '@nestjs/common';
+import {
+  Connection,
+  EntityManager,
+  QueryRunner,
+  Repository,
+  Transaction,
+  getManager,
+} from 'typeorm';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Booking } from './entities/booking.entity';
 import { validate } from 'class-validator';
+import { Transactional } from 'typeorm-transactional-cls-hooked';
+import { users } from 'src/seeding/users.entity';
 
 @Injectable()
 export class BookingsService {
   constructor(
     @InjectRepository(Booking)
     private readonly bookingRepository: Repository<Booking>,
+    @InjectRepository(users)
+    private readonly usersRepository: Repository<users>,
+    private readonly connection: Connection,
   ) {}
 
-  // creating a bookings
   async create(createBookingDto: CreateBookingDto) {
+    const queryRunner = this.connection.createQueryRunner();
+
     try {
-      const errors = await validate(createBookingDto);
-      console.log(errors);
-      if (errors.length > 0) {
-        throw new Error(
-          `Validation failed: ${errors
-            .map((error) => Object.values(error.constraints).join(', '))
-            .join(', ')}`,
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+
+      // checking booking overlap within transaction
+      const isOverlapping = await this.checkBookingOverlap(
+        createBookingDto.vehicleModel,
+        createBookingDto.startDate,
+        createBookingDto.endDate,
+        queryRunner,
+      );
+
+      // If overlap found, throwing an exception
+      if (isOverlapping) {
+        throw new HttpException(
+          'Booking Overlaps with an existing vehicle model',
+          HttpStatus.CONFLICT,
         );
       }
-      const newBooking = this.bookingRepository.create(createBookingDto);
-      return this.bookingRepository.save(newBooking);
+
+      // checking if user is already existing in the db
+      let user = await this.usersRepository.findOne({
+        where: {
+          firstName: createBookingDto.firstName.toLowerCase(),
+          lastName: createBookingDto.lastName.toLowerCase(),
+        },
+      });
+
+      if (!user) {
+        user = this.usersRepository.create({
+          firstName: createBookingDto.firstName.toLowerCase(),
+          lastName: createBookingDto.lastName.toLowerCase(),
+        });
+        await this.usersRepository.save(user);
+      }
+
+      // use the provided manager for the transaction
+      const newBooking = await this.bookingRepository.create({
+        ...createBookingDto,
+        user,
+      });
+      await this.bookingRepository.save(newBooking);
+
+      // commit transaction
+      await queryRunner.commitTransaction();
+
+      return newBooking;
     } catch (error) {
-      console.error('Error in BookingService.create', error.message);
-      throw new Error('failed to create booking');
+      await queryRunner.rollbackTransaction();
+      console.error(
+        'Error in BookingService.createWithTransaction',
+        error.message,
+      );
+      throw new Error('Failed to create booking');
+    } finally {
+      await queryRunner.release();
     }
   }
 
-  // checks startDate and endDate
-  async checkDates(startDate: Date, endDate: Date): Promise<boolean> {
-    if (new Date(startDate) >= new Date(endDate)) {
+  // checking transaction
+  async checkTransactionStatus(bookingId: number): Promise<boolean> {
+    try {
+      const booking = await this.bookingRepository.findOne({
+        where: { id: bookingId },
+      } as any);
+
+      if (!booking) {
+        throw new NotFoundException(`Booking with ID ${bookingId} not found`);
+      }
+      console.log(`Transaction status for Booking ID ${bookingId}: Success`);
       return true;
+    } catch (error) {
+      console.error(`Error checking transaction status`, error.message);
     }
-    return false;
-  }
-
-  // checcking empty fields 
-  async checkEmptyFields(createBookingDto: CreateBookingDto): Promise<boolean> {
-    const {
-      firstName,
-      lastName,
-      numberOfWheels,
-      vehicleType,
-      vehicleModel,
-      startDate,
-      endDate,
-    } = createBookingDto;
-
-    if (
-      !firstName ||
-      !lastName ||
-      !numberOfWheels ||
-      !vehicleType ||
-      !vehicleModel ||
-      !startDate ||
-      !endDate
-    ) {
-      return true;
-    }
-
-    return false;
   }
 
   // checking existing data based on vehicle model
@@ -73,15 +114,17 @@ export class BookingsService {
     vehicleModel: string,
     startDate: Date,
     endDate: Date,
+    queryRunner: QueryRunner,
   ): Promise<boolean> {
-    const existingBooking = await this.bookingRepository
-      .createQueryBuilder('booking')
+    const existingBooking = await queryRunner.manager
+      .createQueryBuilder(Booking, 'booking')
       .where('booking.vehicleModel = :vehicleModel', { vehicleModel })
       .andWhere(
         '(booking.startDate <= :endDate AND booking.endDate >= :startDate)',
         { startDate, endDate },
       )
       .getOne();
+
     return !!existingBooking;
   }
 

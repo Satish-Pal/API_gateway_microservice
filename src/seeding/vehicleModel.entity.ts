@@ -13,4 +13,5 @@ export class vehicleModel {
     cascade: true,
   })
   type: vehicleType;
+  
 }

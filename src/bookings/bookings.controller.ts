@@ -22,39 +22,6 @@ export class BookingsController {
   @Post()
   async create(@Body() createBookingDto: CreateBookingDto) {
     try {
-      // checking if fields are expty or not
-      const isEmpty =
-        await this.bookingsService.checkEmptyFields(createBookingDto);
-
-      if (isEmpty) {
-        throw new ConflictException('please fill the fields');
-      }
-
-      // checking if the vehicle model already exists or not
-      const isOverlapping = await this.bookingsService.checkBookingOverlap(
-        createBookingDto.vehicleModel,
-        createBookingDto.startDate,
-        createBookingDto.endDate,
-      );
-
-      // checking if the same model is exist on in between dates
-      if (isOverlapping) {
-        throw new ConflictException(
-          'Booking Overlaps with an existing vehicle model',
-        );
-      }
-
-      // checking if startdate is greater than endDate
-      const checkDate = await this.bookingsService.checkDates(
-        createBookingDto.startDate,
-        createBookingDto.endDate,
-      );
-
-      if (checkDate) {
-        throw new ConflictException(
-          'start Date should be less than the endDate',
-        );
-      }
 
       const result = await this.bookingsService.create(createBookingDto);
       return result;

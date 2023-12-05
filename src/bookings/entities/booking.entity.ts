@@ -1,16 +1,11 @@
-import { Entity, Unique, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, Unique, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { users } from '../../seeding/users.entity';
 
 @Entity('bookings')
 @Unique(['vehicleType', 'startDate', 'endDate'])
 export class Booking {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @Column({ length: 255 })
-  firstName: string;
-
-  @Column({ length: 255 })
-  lastName: string;
 
   @Column()
   numberOfWheels: number;
@@ -26,4 +21,7 @@ export class Booking {
 
   @Column({ type: 'date' })
   endDate: Date;
+
+  @ManyToOne(()=> users, (user)=> user.bookings)
+  user:users;
 }

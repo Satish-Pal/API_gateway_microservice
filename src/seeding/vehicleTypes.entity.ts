@@ -22,3 +22,6 @@ export class vehicleType {
   @OneToMany(() => vehicleModel, (model) => model.type)
   models: vehicleModel[];
 }
+
+
+
