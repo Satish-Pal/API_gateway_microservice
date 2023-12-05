@@ -1,7 +1,15 @@
 import { Injectable } from '@nestjs/common';
+import { numberOfWheels } from './seeding/numberOfWheels.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AppService {
+  constructor(
+  ) {}
+  // get the users
+  getUsers(): string[] {
+    return ['John', 'Jane'];
+  }
   // get the number of wheels
   getNumberOfWheels(): number[] {
     try {
