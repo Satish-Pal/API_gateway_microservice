@@ -92,23 +92,6 @@ export class BookingsService {
     }
   }
 
-  // checking transaction
-  async checkTransactionStatus(bookingId: number): Promise<boolean> {
-    try {
-      const booking = await this.bookingRepository.findOne({
-        where: { id: bookingId },
-      } as any);
-
-      if (!booking) {
-        throw new NotFoundException(`Booking with ID ${bookingId} not found`);
-      }
-      console.log(`Transaction status for Booking ID ${bookingId}: Success`);
-      return true;
-    } catch (error) {
-      console.error(`Error checking transaction status`, error.message);
-    }
-  }
-
   // checking existing data based on vehicle model
   async checkBookingOverlap(
     vehicleModel: string,
@@ -129,7 +112,7 @@ export class BookingsService {
   }
 
   //  get all the bookings
-  async findAll() {
+  async findAll():Promise<Booking[]> {
     try {
       const bookings = await this.bookingRepository.find();
       return bookings;
@@ -140,8 +123,8 @@ export class BookingsService {
   }
 
   // get the bookings based on id
-  findOne(id: number) {
-    return this.bookingRepository.findOneBy({ id });
+  async findOne(id: number): Promise<Booking> {
+    return this.bookingRepository.findOneBy({id});
   }
 
   // update the bookings based on id

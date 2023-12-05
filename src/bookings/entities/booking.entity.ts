@@ -1,4 +1,4 @@
-import { Entity, Unique, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, Unique, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { users } from '../../seeding/users.entity';
 
 @Entity('bookings')
@@ -6,6 +6,9 @@ import { users } from '../../seeding/users.entity';
 export class Booking {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column({name:'userId'})
+  userId: number;
 
   @Column()
   numberOfWheels: number;
@@ -23,5 +26,6 @@ export class Booking {
   endDate: Date;
 
   @ManyToOne(()=> users, (user)=> user.bookings)
+  @JoinColumn({name:'userId'})
   user:users;
 }

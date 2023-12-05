@@ -14,6 +14,9 @@ import { BookingsService } from './bookings.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 
+import { ApiTags, ApiResponse,ApiOperation } from '@nestjs/swagger';
+import { Booking } from './entities/booking.entity';
+
 @Controller('api/bookings')
 export class BookingsController {
   constructor(private readonly bookingsService: BookingsService) {}
@@ -36,9 +39,10 @@ export class BookingsController {
 
   // get request for getting all the bookings
   @Get()
-  async findAll() {
+  async findAll(): Promise<Booking[]> {
     try {
       const bookings = await this.bookingsService.findAll();
+      console.log(bookings);
       return bookings;
     } catch (error) {
       console.error('Error in bookingsController.findAll', error.message);

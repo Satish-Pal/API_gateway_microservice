@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common/pipes';
 import { Transform } from 'class-transformer';
 import { initializeTransactionalContext } from 'typeorm-transactional-cls-hooked';
+import { setupSwagger } from '../swagger/swagger';
 
 // import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 // import { SeedingService } from './seeding/seeding.service';
@@ -23,6 +24,7 @@ async function bootstrap() {
   );
 
 
+  setupSwagger(app);
   // const Seeding_service = app.get(SeedingService);
 
   // await Seeding_service.seedData();
