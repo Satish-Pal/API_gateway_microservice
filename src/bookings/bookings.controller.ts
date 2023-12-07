@@ -32,12 +32,14 @@ export class BookingsController {
   @Post()
   async create(@Body() createBookingDto: CreateBookingDto) {
     try {
+      console.log(createBookingDto)
       const result = await this.bookingsService.create(createBookingDto);
       if (result) {
         this.rabbitClient.emit('booking_created', createBookingDto);
         this.kafkaClient.emit('booking_created', createBookingDto);
         this.natsClient.emit('booking_created', createBookingDto);
         return result;
+        
       }
     } catch (error) {
       console.error('Error in BookingsController.create', error.message);

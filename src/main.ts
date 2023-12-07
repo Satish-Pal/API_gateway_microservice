@@ -26,6 +26,8 @@ async function bootstrap() {
 
   // await Seeding_service.seedData();
 
+  
   await app.listen(3000);
 }
+
 bootstrap();
