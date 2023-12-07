@@ -2,17 +2,14 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common/pipes';
 import { Transform } from 'class-transformer';
-import { initializeTransactionalContext } from 'typeorm-transactional-cls-hooked';
-import { setupSwagger } from '../swagger/swagger';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 // import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 // import { SeedingService } from './seeding/seeding.service';
 
 async function bootstrap() {
-  initializeTransactionalContext();
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule)
 
-  app.enableCors();
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -23,8 +20,8 @@ async function bootstrap() {
     }),
   );
 
+  app.enableCors();
 
-  setupSwagger(app);
   // const Seeding_service = app.get(SeedingService);
 
   // await Seeding_service.seedData();

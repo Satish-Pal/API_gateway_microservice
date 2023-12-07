@@ -25,4 +25,5 @@ import { Booking } from '../bookings/entities/booking.entity';
     }),
   ],
 })
+
 export class DatabaseModule {}
