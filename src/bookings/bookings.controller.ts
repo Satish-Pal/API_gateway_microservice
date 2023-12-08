@@ -8,6 +8,7 @@ import {
   Delete,
   HttpException,
   HttpStatus,
+  Inject,
 } from '@nestjs/common';
 import { BookingsService } from './bookings.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
@@ -15,11 +16,16 @@ import { UpdateBookingDto } from './dto/update-booking.dto';
 
 import { ApiTags, ApiResponse, ApiOperation } from '@nestjs/swagger';
 import { Booking } from './entities/booking.entity';
+import { ClientProxy } from '@nestjs/microservices';
 
 @Controller('api/bookings')
 export class BookingsController {
   constructor(
     private readonly bookingsService: BookingsService,
+    @Inject('NOTIFICATION_SERVICE') private readonly rabbitClient: ClientProxy,
+    @Inject('NOTIFICATION_SERVICE_KAFKA') private readonly kafkaClient: ClientProxy,
+    @Inject('NOTIFICATION_SERVICE_NATS') private readonly natsClient: ClientProxy,
+
   ) {}
 
   // post request for adding a booking
@@ -28,7 +34,13 @@ export class BookingsController {
     try {
       console.log(createBookingDto)
       const result = await this.bookingsService.create(createBookingDto);
-      return result;
+      if (result) {
+        this.rabbitClient.emit('booking_created', createBookingDto);
+        this.kafkaClient.emit('booking_created', createBookingDto);
+        this.natsClient.emit('booking_created', createBookingDto);
+        return result;
+        
+      }
     } catch (error) {
       console.error('Error in BookingsController.create', error.message);
       throw new HttpException(
